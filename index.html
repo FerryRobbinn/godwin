@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Godwin R. Unite | Web Developer & UI Designer</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --book-bg: #fcfaf5; 
+            --book-ink: #1a1a1a; 
+            --book-accent: #b8860b; 
+            --book-spine-shadow: rgba(0, 0, 0, 0.6); 
+            
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Cormorant Garamond', serif;
+            --font-tech: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2c1b10;
+            background-image: url('desk.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--book-ink);
+            font-family: var(--font-body);
+            overflow: hidden; 
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2500px; 
+        }
+
+        /* Darker Vignette to make UI pop */
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.85) 90%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- TOP NAVIGATION --- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transform: translateY(-100%);
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .top-nav.show {
+            transform: translateY(0);
+        }
+
+        .nav-logo {
+            font-family: var(--font-title);
+            color: var(--book-accent);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #aaa;
+            text-decoration: none;
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--book-accent);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+        }
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #aaa;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-tech);
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            margin-left: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /* Hamburger Menu Button */
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--book-accent);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-screen {
+            position: absolute;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            transition: opacity 1s ease, transform 1.5s ease;
+            padding: 0 5vw;
+            gap: 8vw; 
+            overflow-y: auto; 
+        }
+
+        #intro-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1); 
+        }
+
+        .intro-text {
+            flex: 0 1 520px; 
+            background: rgba(15, 15, 15, 0.65);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 3.5rem 3rem;
+            border-radius: 16px;
+            text-align: left;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            z-index: 2;
+        }
+
+        .intro-text h1 {
+            font-family: var(--font-title);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .intro-text .subtitle {
+            font-family: var(--font-tech);
+            color: var(--book-accent);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .intro-text p {
+            font-family: var(--font-tech);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #ccc;
+            margin-bottom: 2.5rem;
+        }
+
+        .intro-btn {
+            background: var(--book-accent);
+            color: #111;
+            padding: 16px 36px;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-tech);
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .intro-btn:hover {
+            background: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+        }
+
+        .intro-book-wrapper {
+            flex: 0 1 auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 5vh;
+        }
+
+        .book-3d {
+            position: relative;
+            width: 300px;
+            height: 430px;
+            transform-style: preserve-3d;
+            transform: rotateX(25deg) rotateZ(-5deg);
+            transition: transform 1s ease;
+            cursor: pointer;
+        }
+
+        .book-3d:hover {
+            transform: rotateX(20deg) rotateZ(0deg) translateY(-15px);
+        }
+
+        .book-3d::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            filter: blur(35px);
+            transform: translateZ(-30px) translateX(20px) translateY(30px);
+            border-radius: 10px;
+            z-index: -1;
+        }
+
+        .cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2a1c14, #110a07);
+            border: 2px solid #3a2518;
+            border-left: 10px solid #1a100a; 
+            border-radius: 4px 12px 12px 4px;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.8s cubic-bezier(0.25, 1, 0.5, 1); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: inset 15px 0 30px rgba(0,0,0,0.9);
+        }
+
+        .cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--book-bg);
+            border-radius: 4px 12px 12px 4px;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+            border-left: 5px solid var(--book-spine-shadow);
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            inset: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 2px 8px 8px 2px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .cover-title-text {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: #d4af37;
+            text-shadow: 1px 1px 3px rgba(0,0,0,1);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-subtitle-text {
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            color: #888;
+            letter-spacing: 5px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-divider {
+            width: 60px;
+            height: 1px;
+            background: #d4af37;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .book-underlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--book-bg);
+            border-radius: 4px 12px 12px 4px;
+            transform: translateZ(-5px);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .book-3d.is-open .cover {
+            transform: rotateY(-175deg); 
+        }
+
+        /* --- THE MAIN OPEN BOOK --- */
+        .book-container {
+            height: 82vh;
+            width: calc(82vh * 1.45); 
+            max-width: 95vw; 
+            
+            position: absolute;
+            top: 53%; 
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7) translateY(50px); 
+            opacity: 0;
+            transition: opacity 1.2s ease 0.6s, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.6s;
+            z-index: 10;
+            pointer-events: none;
+            
+            background-color: var(--book-bg);
+            box-shadow: 
+                0 50px 100px rgba(0,0,0,0.9), 
+                -10px 0 20px rgba(0,0,0,0.2),  
+                10px 0 20px rgba(0,0,0,0.2),   
+                0 0 0 8px #f0ebe1,            
+                0 0 0 10px #2a1c14;           
+            border-radius: 8px 16px 16px 8px;
+        }
+
+        .book-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 100%;
+            background: linear-gradient(to right, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0,0,0,0.05) 30%, 
+                rgba(0,0,0,0.25) 45%, 
+                rgba(0,0,0,0.5) 50%, 
+                rgba(0,0,0,0.25) 55%, 
+                rgba(0,0,0,0.05) 70%, 
+                rgba(0,0,0,0) 100%
+            );
+            z-index: 50; 
+            pointer-events: none;
+        }
+
+        .book-container.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1) translateY(0); 
+        }
+
+        /* --- PAGE CONTAINER & FLIP ANIMATION --- */
+        .pages-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            
+            opacity: 0;
+            transform: scale(0.98) translateX(0);
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .page.turned {
+            opacity: 0;
+            transform: scale(0.98) translateX(-20px);
+            z-index: 5;
+        }
+
+        .page.waiting {
+            opacity: 0;
+            transform: scale(0.98) translateX(20px);
+            z-index: 5;
+        }
+
+        /* --- THE PAGE FLIP SHADOW OVERLAY --- */
+        .flip-shadow {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 40; 
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .flip-shadow.next-anim {
+            right: 0;
+            background: linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+            transform-origin: left center;
+            animation: sweepNext 0.6s ease-in-out forwards;
+        }
+        
+        .flip-shadow.prev-anim {
+            left: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+            transform-origin: right center;
+            animation: sweepPrev 0.6s ease-in-out forwards;
+        }
+
+        @keyframes sweepNext {
+            0% { transform: rotateY(0deg); opacity: 1; }
+            100% { transform: rotateY(-180deg); opacity: 0; }
+        }
+        @keyframes sweepPrev {
+            0% { transform: rotateY(0deg); opacity: 1; }
+            100% { transform: rotateY(180deg); opacity: 0; }
+        }
+
+        /* --- INVISIBLE CLICK ZONES --- */
+        .click-zone {
+            position: absolute;
+            top: 0;
+            width: 15%;
+            height: 100%;
+            z-index: 60;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .click-zone:hover { background: rgba(0,0,0,0.02); }
+        .zone-left:hover { box-shadow: inset 10px 0 20px -10px rgba(0,0,0,0.1); }
+        .zone-right:hover { box-shadow: inset -10px 0 20px -10px rgba(0,0,0,0.1); }
+        .zone-left { left: 0; border-radius: 8px 0 0 8px; }
+        .zone-right { right: 0; border-radius: 0 16px 16px 0; }
+
+        /* --- TWO PAGE SPREAD LAYOUT --- */
+        .left-page, .right-page {
+            padding: 4vh 8% 6vh 8%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            overflow-y: auto; 
+            scrollbar-width: none; 
+        }
+
+        .left-page::-webkit-scrollbar, .right-page::-webkit-scrollbar {
+            display: none;
+        }
+
+        .left-page { text-align: right; align-items: flex-end; padding-right: 12%; }
+        .right-page { text-align: left; align-items: flex-start; padding-left: 12%; }
+        .center-content { text-align: center; align-items: center; }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px; 
+            font-family: var(--font-tech);
+            font-size: 0.75rem;
+            color: #aaa;
+            letter-spacing: 4px;
+        }
+        .left-page .page-number { left: 8%; }
+        .right-page .page-number { right: 8%; }
+
+        /* --- Typography & Elements --- */
+        .chapter-heading { font-family: var(--font-tech); font-size: 0.8rem; color: var(--book-accent); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 0.8rem; font-weight: 700; }
+        .section-title { font-family: var(--font-title); font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.2; margin-bottom: 1.2rem; color: var(--book-ink); }
+        
+        /* Page 1 (Cover) */
+        .page-title-special {
+            text-align: center !important;
+            align-items: center !important;
+            padding-right: 8% !important; 
+        }
+        .main-title { font-family: var(--font-title); font-size: clamp(2.5rem, 4.5vw, 4rem); line-height: 1.1; font-weight: 900; margin-bottom: 1rem; }
+        .cover-divider-main { width: 120px; height: 1px; background: var(--book-accent); margin: 1.5rem auto; position: relative; }
+        .cover-divider-main::after { content: '❖'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--book-bg); padding: 0 10px; color: var(--book-accent); font-size: 1rem; }
+        .cover-author { font-family: var(--font-body); font-size: 1.5rem; font-style: italic; color: #555; }
+
+        /* TOC */
+        .toc { width: 100%; max-width: 320px; font-family: var(--font-tech); margin-top: 1rem; }
+        .toc-title { font-size: 0.85rem; letter-spacing: 4px; color: #888; margin-bottom: 1.5rem; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .toc-item { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px dotted #ccc; color: #444; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; cursor: pointer; }
+        .toc-item:hover { color: var(--book-accent); padding-left: 5px; }
+        
+        /* Page 2 (About) */
+        .prologue-text { font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 0.8rem; }
+        .drop-cap::first-letter { font-family: var(--font-title); font-size: 3rem; float: left; line-height: 0.8; padding-right: 8px; padding-top: 4px; color: var(--book-accent); }
+        .degree-stamp { display: inline-block; border: 1px solid var(--book-accent); color: var(--book-accent); padding: 6px 12px; font-family: var(--font-tech); font-size: 0.7rem; border-radius: 4px; margin-top: 0.5rem; font-weight: bold; }
+        
+        .portrait-frame { padding: 8px; background: #fff; border: 1px solid #e0e0e0; box-shadow: -8px 8px 20px rgba(0,0,0,0.1); transform: rotate(-2deg); width: 100%; max-width: 200px; margin: 0 auto; position: relative; transition: transform 0.3s; }
+        .portrait-frame:hover { transform: rotate(0deg) scale(1.02); }
+        .portrait-frame::after { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%) rotate(2deg); width: 50px; height: 15px; background: rgba(255,255,255,0.6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .portrait-frame img { width: 100%; display: block; max-height: 28vh; object-fit: cover; object-position: top; }
+        .portrait-caption { text-align: center; font-family: var(--font-tech); font-size: 0.65rem; color: #888; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Quick Facts (New Addition) */
+        .quick-facts {
+            width: 100%;
+            max-width: 320px;
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quick-facts p {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            text-align: center;
+        }
+        .quick-facts ul {
+            list-style: none;
+            padding: 0;
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .quick-facts li {
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        /* Page 3 (Skills) */
+        .skills-list { width: 100%; max-width: 350px; }
+        .skill-row { padding: 0.8rem 0; border-bottom: 1px solid #e0e0e0; text-align: left; }
+        .skill-name { font-family: var(--font-title); font-size: 1.1rem; display: block; margin-bottom: 0.2rem; }
+        .skill-type { font-family: var(--font-tech); font-size: 0.75rem; color: #666; text-transform: uppercase; display: block; }
+        .skill-level { font-family: var(--font-tech); color: var(--book-accent); font-size: 0.75rem; font-weight: bold; margin-top: 0.3rem; display: inline-block; background: rgba(184, 134, 11, 0.1); padding: 2px 8px; border-radius: 3px;}
+
+        /* Page 4 (Projects) */
+        .projects-list { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 0.8rem; }
+        .project-card { background: #fff; border: 1px solid #ddd; padding: 0.8rem 1rem; box-shadow: 2px 2px 8px rgba(0,0,0,0.05); position: relative; text-align: left; transition: transform 0.3s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+        .project-card:hover { transform: translateX(5px); border-left: 3px solid var(--book-accent); }
+        .project-number { font-family: var(--font-tech); color: #eee; font-size: 1.8rem; font-weight: bold; position: absolute; top: 5px; right: 10px; }
+        .project-title { font-family: var(--font-title); font-size: 1rem; margin-bottom: 0.3rem; }
+        .project-desc { font-size: 0.85rem; color: #555; line-height: 1.3; margin-bottom: 0.5rem; }
+        .tech-stack { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tech-tag { font-family: var(--font-tech); font-size: 0.6rem; padding: 2px 6px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 2px; color: #555; font-weight: bold; }
+        .project-link-icon { position: absolute; bottom: 15px; right: 15px; font-size: 1.2rem; color: var(--book-accent); opacity: 0; transition: opacity 0.3s; }
+        .project-card:hover .project-link-icon { opacity: 1; }
+
+        /* Page 5 (Contact) */
+        .epilogue-text { font-size: 1rem; color: #444; margin-bottom: 1.5rem; line-height: 1.5; }
+        .massive-email { font-family: var(--font-tech); font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--book-ink); text-decoration: none; border-bottom: 2px solid var(--book-accent); padding-bottom: 6px; transition: all 0.3s ease; display: inline-block; font-weight: 700; margin-bottom: 1.5rem; }
+        .massive-email:hover { color: var(--book-accent); background: rgba(184,134,11,0.05); padding-left: 10px; padding-right: 10px; border-radius: 4px; }
+        
+        .resume-btn {
+            display: inline-block;
+            background: var(--book-ink);
+            color: #fff;
+            padding: 10px 20px;
+            font-family: var(--font-tech);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+            margin-top: 0.5rem;
+        }
+        .resume-btn:hover { background: var(--book-accent); }
+
+        /* =========================================
+           RESPONSIVE MOBILE OPTIMIZATIONS (<= 900px)
+           ========================================= */
+        @media (max-width: 900px) {
+            /* --- Intro Screen Mobile --- */
+            #intro-screen {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 30px 5vw; 
+                gap: 1rem;
+                overflow-y: auto;
+            }
+
+            .intro-text {
+                padding: 1.5rem;
+                width: 100%;
+                text-align: right; 
+                background: rgba(15, 15, 15, 0.85);
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end; 
+            }
+
+            .intro-text h1 { font-size: clamp(1.8rem, 8vw, 2.2rem); }
+            .intro-text .subtitle { font-size: 0.85rem; text-align: right; }
+            .intro-text p { font-size: 0.85rem; margin-bottom: 1.5rem; text-align: right; }
+            .intro-btn { width: 100%; padding: 12px 20px; font-size: 0.85rem; }
+
+            .intro-book-wrapper { padding-bottom: 20px; margin-top: 0; display: flex; justify-content: center; width: 100%; }
+            .book-3d { width: 45vw; max-width: 160px; aspect-ratio: 300 / 430; height: auto; transform: rotateX(15deg) rotateZ(-3deg); }
+            .cover-title-text { font-size: clamp(1rem, 4vw, 1.2rem); margin-bottom: 0.2rem; }
+            .cover-divider { margin-bottom: 1rem; width: 40px; }
+            .cover-subtitle-text { font-size: clamp(0.45rem, 1.5vw, 0.6rem); letter-spacing: 3px; }
+            .cover::before { inset: 10px; }
+
+            /* --- Top Nav Mobile (Hamburger Menu) --- */
+            .top-nav {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 20px;
+            }
+
+            .menu-toggle { display: block; }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 15, 15, 0.98);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                align-items: flex-end; 
+            }
+
+            .nav-links.open { display: flex; }
+
+            .nav-links a {
+                font-size: 1rem;
+                width: 100%;
+                text-align: right;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+
+            .close-btn {
+                margin-left: 0;
+                width: 100%;
+                margin-top: 10px;
+                padding: 10px;
+            }
+
+            /* --- Book Container Mobile --- */
+            .book-container {
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                transform: translate(0, 0); 
+                border-radius: 0;
+                box-shadow: none;
+                overflow: hidden; 
+                padding-top: 70px; 
+                display: block; 
+            }
+
+            .book-container.show {
+                transform: translate(0, 0);
+            }
+
+            .book-container::before {
+                display: none; 
+            }
+
+            /* --- Single Page Layout (Stacked Grid for seamless swapping) --- */
+            .pages-wrapper {
+                display: block;
+                height: 100%;
+            }
+
+            .page {
+                display: none;
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+            .page.active {
+                display: grid; 
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .left-page, .right-page {
+                grid-area: 1 / 1; 
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: right;
+                align-items: flex-end; 
+                padding: 40px 8vw 60px 8vw;
+                background-color: var(--book-bg);
+                overflow-y: auto;
+                
+                transition: opacity 0.4s ease, transform 0.4s ease;
+            }
+
+            /* Hide Right Page by default */
+            .page .right-page {
+                opacity: 0;
+                transform: translateX(50px);
+                pointer-events: none;
+            }
+
+            /* Show Right Page when class is applied */
+            .page.show-right .left-page {
+                opacity: 0;
+                transform: translateX(-50px);
+                pointer-events: none;
+            }
+
+            .page.show-right .right-page {
+                opacity: 1;
+                transform: translateX(0);
+                pointer-events: auto;
+            }
+
+            /* --- Page Number Anchored to Bottom --- */
+            .page-number {
+                position: absolute;
+                bottom: 20px;
+                right: 8vw;
+                left: auto !important;
+                margin: 0;
+                width: auto;
+                display: block;
+            }
+
+            /* Hide click zones on mobile */
+            .click-zone {
+                display: none;
+            }
+
+            /* --- Typography Fixes --- */
+            .main-title { font-size: 1.8rem; margin-top: 0; text-align: right; width: 100%; }
+            .section-title { font-size: 1.4rem; text-align: right; width: 100%; margin-bottom: 1rem; }
+            .chapter-heading { text-align: right; width: 100%; font-size: 0.75rem; }
+            
+            /* Drop Cap */
+            .drop-cap::first-letter { 
+                font-family: var(--font-title);
+                font-size: 1.5em; 
+                float: none; 
+                padding: 0; 
+                margin: 0;
+                color: var(--book-accent); 
+                vertical-align: baseline;
+            }
+            
+            .prologue-text { font-size: 0.85rem; line-height: 1.5; text-align: right; margin-bottom: 0.8rem; }
+            .epilogue-text { font-size: 0.85rem; text-align: right; }
+            
+            /* Center content specific to mobile */
+            .right-page.center-content {
+                justify-content: flex-start; /* Prevent vertical cutoff */
+                padding-top: 40px;
+            }
+
+            .portrait-frame {
+                max-width: 120px;
+                margin: 10px 0 10px auto; 
+                transform: rotate(0);
+            }
+
+            /* Mobile Quick Facts Alignment */
+            .quick-facts {
+                align-items: flex-end; 
+            }
+            .quick-facts p {
+                text-align: right;
+                font-size: 0.9rem;
+            }
+            .quick-facts li {
+                text-align: right;
+                font-size: 0.85rem;
+                margin-bottom: 0.6rem;
+            }
+
+            /* TOC adjustments */
+            .toc { margin: 0 auto; width: 100%; display: flex; flex-direction: column; align-items: flex-end; }
+            .toc-title { text-align: right; width: 100%; margin-bottom: 1rem; font-size: 0.8rem; }
+            .toc-item { padding: 8px 0; font-size: 0.85rem; width: 100%; display: flex; flex-direction: row-reverse; justify-content: flex-start; gap: 15px;}
+            .toc-item span:last-child { margin-right: auto; } 
+            .toc-item:hover { padding-left: 0; padding-right: 5px; }
+
+            /* Projects List adjustments */
+            .projects-list { gap: 0.6rem; width: 100%; }
+            .project-card { padding: 0.6rem 0.8rem; text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+            .project-title { text-align: right; font-size: 0.9rem; margin-bottom: 0.2rem; }
+            .project-desc { text-align: right; font-size: 0.75rem; line-height: 1.3; margin-bottom: 0.4rem; }
+            .project-number { position: static; margin-bottom: 2px; font-size: 1rem; color: #ccc; }
+            .tech-stack { justify-content: flex-end; }
+            .project-link-icon { display: none; }
+
+            /* Skills adjustments */
+            .skills-list { width: 100%; }
+            .skill-row { text-align: right; display: flex; flex-direction: column; align-items: flex-end; padding: 0.6rem 0; }
+            .skill-name { font-size: 0.95rem; }
+            .skill-type { font-size: 0.7rem; }
+            .skill-level { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav" id="top-nav">
+        <div class="nav-logo">GODWIN R. UNITE</div>
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+        <div class="nav-links" id="nav-links">
+            <a data-target="0" class="nav-link active">Home</a>
+            <a data-target="1" class="nav-link">About</a>
+            <a data-target="2" class="nav-link">Skills</a>
+            <a data-target="3" class="nav-link">Projects</a>
+            <a data-target="4" class="nav-link">Contact</a>
+            <button class="close-btn" id="close-btn">Close Portfolio ✕</button>
+        </div>
+    </nav>
+
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-text">
+            <h1>Hi, I'm Godwin.</h1>
+            <div class="subtitle">Web Developer & UI Designer</div>
+            <p>An IT graduate from NEUST Atate Campus specializing in building digital experiences that are as functional as they are beautiful. I bridge the gap between complex code and human-centric design.</p>
+            <button class="intro-btn" id="open-book-btn">View My Work</button>
+        </div>
+        
+        <div class="intro-book-wrapper">
+            <div class="book-3d" id="book-3d">
+                <div class="book-underlay"></div>
+                <div class="cover">
+                    <div class="cover-title-text">GODWIN R.</div>
+                    <div class="cover-title-text">UNITE</div>
+                    <div class="cover-divider"></div>
+                    <div class="cover-subtitle-text">Portfolio</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- THE MAIN OPEN BOOK -->
+    <div class="book-container" id="book-container">
+        
+        <div class="click-zone zone-left" id="zone-left" title="Previous Page (or Close)"></div>
+        <div class="click-zone zone-right" id="zone-right" title="Next Page (or Close)"></div>
+        
+        <div class="flip-shadow" id="flip-shadow"></div>
+
+        <div class="pages-wrapper">
+
+            <!-- PAGE 1: TITLE & TOC -->
+            <section class="page active" id="page-0">
+                <div class="left-page page-title-special">
+                    <div class="chapter-heading">— Portfolio 2024 —</div>
+                    <h1 class="main-title">GODWIN<br>R. UNITE</h1>
+                    <div class="cover-divider-main"></div>
+                    <div class="cover-author">Web Developer & UI Designer</div>
+                    <div class="page-number">PAGE 01</div>
+                </div>
+                <div class="right-page">
+                    <div class="toc">
+                        <div class="toc-title">Table of Contents</div>
+                        <a class="toc-item" data-target="1">
+                            <span>I. About Me</span>
+                            <span>02</span>
+                        </a>
+                        <a class="toc-item" data-target="2">
+                            <span>II. Technical Skills</span>
+                            <span>03</span>
+                        </a>
+                        <a class="toc-item" data-target="3">
+                            <span>III. Featured Projects</span>
+                            <span>04</span>
+                        </a>
+                        <a class="toc-item" data-target="4">
+                            <span>IV. Get in Touch</span>
+                            <span>05</span>
+                        </a>
+                    </div>
+                    <div class="page-number">PAGE 02</div>
+                </div>
+            </section>
+
+            <!-- PAGE 2: ABOUT ME -->
+            <section class="page waiting" id="page-1">
+                <div class="left-page">
+                    <div class="chapter-heading">— About Me —</div>
+                    <h2 class="section-title">Architecting the Digital Realm.</h2>
+                    <p class="prologue-text drop-cap">
+                        Every good project starts with a foundation. Mine was built at the <strong>Nueva Ecija University of Science and Technology (NEUST) - Atate Campus</strong>, where I earned my Bachelor of Science in Information Technology.
+                    </p>
+                    <p class="prologue-text">
+                        I am not just a coder, nor just a designer. I am a <strong>communicator</strong>. I bridge the gap between complex backend logic and intuitive, human-centric UI design.
+                    </p>
+                    <div class="degree-stamp">BSIT Graduate • NEUST Atate</div>
+                    <div class="page-number">PAGE 03</div>
+                </div>
+                <div class="right-page center-content">
+                    <div class="portrait-frame">
+                        <img src="godwin-photo.jpg" alt="Godwin R. Unite">
+                        <div class="portrait-caption">Godwin R. Unite</div>
+                    </div>
+                    
+                    <!-- Added Content: Quick Facts -->
+                    <div class="quick-facts">
+                        <p>"Design is not just what it looks like. Design is how it works."</p>
+                        <ul>
+                            <li>📍 Nueva Ecija, PH</li>
+                            <li>🎓 BSIT Graduate (NEUST)</li>
+                            <li>💻 Full-Stack Developer</li>
+                            <li>🎨 UI/UX Enthusiast</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="page-number">PAGE 04</div>
+                </div>
+            </section>
+
+            <!-- PAGE 3: SKILLS -->
+            <section class="page waiting" id="page-2">
+                <div class="left-page">
+                    <div class="chapter-heading">— Technical Skills —</div>
+                    <h2 class="section-title">My Toolkit.</h2>
+                    <p class="prologue-text" style="max-width: 300px;">A detailed breakdown of the technical and soft skills honed over years of academic and practical experience.</p>
+                    <div class="page-number">PAGE 05</div>
+                </div>
+                <div class="right-page">
+                    <div class="skills-list">
+                        <div class="skill-row">
+                            <span class="skill-name">Web Development</span>
+                            <span class="skill-type">HTML, CSS, JS, PHP</span>
+                            <span class="skill-level">Expert</span>
+                        </div>
+                        <div class="skill-row">
+                            <span class="skill-name">UI/UX Design</span>
+                            <span class="skill-type">Figma, Wireframing</span>
+                            <span class="skill-level">Advanced</span>
+                        </div>
+                        <div class="skill-row">
+                            <span class="skill-name">Database Management</span>
+                            <span class="skill-type">MySQL, System Arch</span>
+                            <span class="skill-level">Advanced</span>
+                        </div>
+                        <div class="skill-row">
+                            <span class="skill-name">Communication</span>
+                            <span class="skill-type">Client Relations, Team Sync</span>
+                            <span class="skill-level">Expert</span>
+                        </div>
+                    </div>
+                    <div class="page-number">PAGE 06</div>
+                </div>
+            </section>
+
+            <!-- PAGE 4: PROJECTS -->
+            <section class="page waiting" id="page-3">
+                <div class="left-page">
+                    <div class="chapter-heading">— Featured Projects —</div>
+                    <h2 class="section-title">My Recent Work.</h2>
+                    <p class="prologue-text" style="max-width: 300px;">A curated selection of systems and interfaces built to solve real-world problems.</p>
+                    <div class="page-number">PAGE 07</div>
+                </div>
+                <div class="right-page">
+                    <div class="projects-list">
+                        <a href="#" class="project-card">
+                            <div class="project-number">01</div>
+                            <h3 class="project-title">Barangay Management System</h3>
+                            <p class="project-desc">A comprehensive web-based system for LGUs to digitize resident records and handle blotter reports.</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">PHP</span>
+                                <span class="tech-tag">MySQL</span>
+                            </div>
+                            <span class="project-link-icon">↗</span>
+                        </a>
+                        <a href="#" class="project-card">
+                            <div class="project-number">02</div>
+                            <h3 class="project-title">Aura E-Commerce UI</h3>
+                            <p class="project-desc">A sleek, modern online storefront designed with a mobile-first approach.</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">Figma</span>
+                                <span class="tech-tag">React.js</span>
+                            </div>
+                            <span class="project-link-icon">↗</span>
+                        </a>
+                        <a href="#" class="project-card">
+                            <div class="project-number">03</div>
+                            <h3 class="project-title">NEUST Library System</h3>
+                            <p class="project-desc">An academic library management system to track inventory and automate fines.</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">Java</span>
+                                <span class="tech-tag">MySQL</span>
+                            </div>
+                            <span class="project-link-icon">↗</span>
+                        </a>
+                    </div>
+                    <div class="page-number">PAGE 08</div>
+                </div>
+            </section>
+
+            <!-- PAGE 5: CONTACT -->
+            <section class="page waiting" id="page-4">
+                <div class="left-page">
+                    <div class="chapter-heading">— Contact —</div>
+                    <h2 class="section-title">Let's Work Together.</h2>
+                    <p class="epilogue-text">Whether you need a full-stack web application, a stunning user interface, or a team member who can communicate complex ideas—my inbox is always open.</p>
+                    <div class="page-number">PAGE 09</div>
+                </div>
+                <div class="right-page center-content">
+                    <div class="chapter-heading">— Get in Touch —</div>
+                    <a href="mailto:godwin4unite@gmail.com" class="massive-email">godwin4unite@gmail.com</a>
+                    
+                    <a href="#" class="resume-btn">Download Resume ↓</a>
+                    
+                    <p style="font-family: var(--font-tech); font-size: 0.7rem; color: #888; margin-top: 2rem;">&copy; 2024 Godwin R. Unite.<br>All Rights Reserved.</p>
+                    <div class="page-number">PAGE 10</div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        const introScreen = document.getElementById('intro-screen');
+        const book3d = document.getElementById('book-3d');
+        const bookContainer = document.getElementById('book-container');
+        const topNav = document.getElementById('top-nav');
+        const openBtn = document.getElementById('open-book-btn');
+        const closeBtn = document.getElementById('close-btn');
+        
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tocItems = document.querySelectorAll('.toc-item');
+        
+        const zoneLeft = document.getElementById('zone-left');
+        const zoneRight = document.getElementById('zone-right');
+        const flipShadow = document.getElementById('flip-shadow');
+
+        // Hamburger Menu Logic
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('open');
+        });
+
+        let isOpen = false;
+        let currentIndex = 0;
+        let currentSide = 0; // 0 = Left Page, 1 = Right Page (for mobile)
+        let isAnimating = false;
+
+        // --- OPEN BOOK ---
+        function openBook() {
+            if (isOpen) return;
+            isOpen = true;
+
+            book3d.classList.add('is-open');
+            introScreen.classList.add('fade-out');
+            
+            setTimeout(() => {
+                bookContainer.classList.add('show');
+                topNav.classList.add('show');
+                introScreen.style.display = 'none'; 
+                
+                currentIndex = 0;
+                currentSide = 0;
+                updatePages('none');
+            }, 1000); 
+        }
+
+        // --- CLOSE BOOK ---
+        function closeBook() {
+            if (!isOpen) return;
+            isOpen = false;
+
+            bookContainer.classList.remove('show');
+            topNav.classList.remove('show');
+            navMenu.classList.remove('open'); 
+            
+            introScreen.style.display = 'flex';
+            setTimeout(() => {
+                introScreen.classList.remove('fade-out');
+            }, 50);
+
+            setTimeout(() => {
+                book3d.classList.remove('is-open');
+            }, 500); 
+
+            currentIndex = 0;
+            currentSide = 0;
+            updatePages('none');
+        }
+
+        book3d.addEventListener('click', openBook);
+        openBtn.addEventListener('click', openBook);
+        closeBtn.addEventListener('click', closeBook);
+
+        window.addEventListener('wheel', (e) => {
+            if (!isOpen) {
+                e.preventDefault();
+            } else {
+                if (window.innerWidth > 900) {
+                    e.preventDefault(); 
+                    if (isAnimating) return;
+                    
+                    if (e.deltaY > 0) {
+                        if (currentIndex === pages.length - 1) closeBook();
+                        else nextPage();
+                    } else if (e.deltaY < 0) {
+                        if (currentIndex === 0) closeBook();
+                        else prevPage();
+                    }
+                }
+            }
+        }, { passive: false });
+
+
+        // --- PAGE TURNING LOGIC ---
+        function updatePages(direction) {
+            pages.forEach((page, index) => {
+                page.className = 'page';
+                if (index === currentIndex) {
+                    page.classList.add('active');
+                    
+                    if (window.innerWidth <= 900) {
+                        if (currentSide === 1) page.classList.add('show-right');
+                    }
+                } else if (index < currentIndex) {
+                    page.classList.add('turned');
+                } else {
+                    page.classList.add('waiting');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if(parseInt(link.getAttribute('data-target')) === currentIndex) {
+                    link.classList.add('active');
+                }
+            });
+
+            flipShadow.className = 'flip-shadow'; 
+            if (direction === 'next' && window.innerWidth > 900) {
+                void flipShadow.offsetWidth; 
+                flipShadow.classList.add('next-anim');
+            } else if (direction === 'prev' && window.innerWidth > 900) {
+                void flipShadow.offsetWidth;
+                flipShadow.classList.add('prev-anim');
+            }
+
+            isAnimating = true;
+            setTimeout(() => { isAnimating = false; }, 600); 
+        }
+
+        function nextPage() {
+            if (window.innerWidth <= 900) {
+                if (currentSide === 0) {
+                    currentSide = 1;
+                    updatePages('next');
+                } else {
+                    if (currentIndex < pages.length - 1) {
+                        currentSide = 0;
+                        currentIndex++;
+                        updatePages('next');
+                    } else {
+                        closeBook();
+                    }
+                }
+            } else {
+                if (currentIndex < pages.length - 1 && !isAnimating) {
+                    currentIndex++;
+                    updatePages('next');
+                }
+            }
+        }
+
+        function prevPage() {
+            if (window.innerWidth <= 900) {
+                if (currentSide === 1) {
+                    currentSide = 0;
+                    updatePages('prev');
+                } else {
+                    if (currentIndex > 0) {
+                        currentSide = 1;
+                        currentIndex--;
+                        updatePages('prev');
+                    } else {
+                        closeBook();
+                    }
+                }
+            } else {
+                if (currentIndex > 0 && !isAnimating) {
+                    currentIndex--;
+                    updatePages('prev');
+                }
+            }
+        }
+
+        // --- CLICK ZONES WITH EDGE CASE (CLOSE BOOK) ---
+        zoneRight.addEventListener('click', () => {
+            if (!isOpen || isAnimating) return;
+            if (currentIndex === pages.length - 1) {
+                closeBook();
+            } else {
+                nextPage();
+            }
+        });
+        
+        zoneLeft.addEventListener('click', () => {
+            if (!isOpen || isAnimating) return;
+            if (currentIndex === 0) {
+                closeBook();
+            } else {
+                prevPage();
+            }
+        });
+
+        // Nav & TOC Clicks
+        function handleNavClick(e) {
+            e.preventDefault();
+            if (!isOpen) return;
+            const targetIndex = parseInt(e.currentTarget.getAttribute('data-target'));
+            
+            currentSide = 0;
+
+            if (targetIndex === currentIndex && window.innerWidth > 900) return;
+            if (window.innerWidth <= 900 && targetIndex === currentIndex && currentSide === 0) return;
+            
+            if (window.innerWidth <= 900) {
+                navMenu.classList.remove('open');
+            }
+
+            const direction = targetIndex > currentIndex ? 'next' : 'prev';
+            currentIndex = targetIndex;
+            updatePages(direction);
+        }
+
+        navLinks.forEach(link => link.addEventListener('click', handleNavClick));
+        tocItems.forEach(item => item.addEventListener('click', handleNavClick));
+
+        // --- MOBILE SMART SWIPE ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+        
+        bookContainer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        
+        bookContainer.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            if (!isOpen || isAnimating) return;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX < 0) {
+                    nextPage();
+                } else {
+                    prevPage();
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
